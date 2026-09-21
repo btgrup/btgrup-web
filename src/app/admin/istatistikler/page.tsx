@@ -18,7 +18,8 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronRight,
-  Trash2
+  Trash2,
+  Activity
 } from 'lucide-react';
 import { AnalyticsSummary } from '@/lib/analyticsTypes';
 import { getPageTitleByPath } from '@/lib/analyticsUtils';
@@ -32,14 +33,16 @@ export default function AdminIstatistiklerPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [testing, setTesting] = useState(false);
 
   const fetchData = async (selectedPeriod: '7d' | '30d' | 'all', isManual = false) => {
     if (isManual) setRefreshing(true);
     try {
-      const [resData, resSettings] = await Promise.all([
-        fetch(`/api/analytics?period=${selectedPeriod}`, { cache: 'no-store' }),
-        fetch('/api/settings', { cache: 'no-store' })
-      ]);
+      let resData = await fetch(`/api/traffic?period=${selectedPeriod}`, { cache: 'no-store' }).catch(() => null);
+      if (!resData || !resData.ok) {
+        resData = await fetch(`/api/analytics?period=${selectedPeriod}`, { cache: 'no-store' });
+      }
+      const resSettings = await fetch('/api/settings', { cache: 'no-store' });
       const json = await resData.json();
       const settingsJson = await resSettings.json();
       setData(json);
@@ -49,6 +52,31 @@ export default function AdminIstatistiklerPage() {
     } finally {
       setLoading(false);
       if (isManual) setRefreshing(false);
+    }
+  };
+
+  const handleTestVisit = async () => {
+    setTesting(true);
+    try {
+      const res = await fetch('/api/traffic/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path: '/hizmetler/web-tasarim',
+          referrer: 'Admin Panel Testi',
+          visitorId: 'test_admin_' + Date.now().toString(36)
+        })
+      });
+      if (res.ok) {
+        await fetchData(period, true);
+        showSuccessToast('Test ziyareti başarıyla kaydedildi! Sayfa ve grafik güncellendi.');
+      } else {
+        showErrorToast('Test isteği başarısız oldu.');
+      }
+    } catch {
+      showErrorToast('Sunucu bağlantı hatası oluştu.');
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -63,8 +91,11 @@ export default function AdminIstatistiklerPage() {
 
     setResetting(true);
     try {
-      const res = await fetch('/api/analytics', { method: 'DELETE' });
-      if (res.ok) {
+      let res = await fetch('/api/traffic', { method: 'DELETE' }).catch(() => null);
+      if (!res || !res.ok) {
+        res = await fetch('/api/analytics', { method: 'DELETE' });
+      }
+      if (res && res.ok) {
         await fetchData(period, true);
         showSuccessToast('Ziyaretçi istatistikleri başarıyla sıfırlandı.');
       } else {
@@ -143,6 +174,16 @@ export default function AdminIstatistiklerPage() {
             className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition-colors shadow-xs"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-600' : ''}`} />
+          </button>
+
+          <button
+            onClick={handleTestVisit}
+            disabled={testing || refreshing}
+            title="Sistemin çalıştığını doğrulamak için anlık test ziyareti kaydeder"
+            className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-700 rounded-xl transition-colors shadow-xs text-xs font-bold disabled:opacity-50"
+          >
+            <Activity className={`w-3.5 h-3.5 ${testing ? 'animate-spin text-emerald-600' : ''}`} />
+            <span>{testing ? 'Test Ediliyor...' : 'Canlı Test Et'}</span>
           </button>
 
           <button

@@ -19,20 +19,7 @@ export default function AnalyticsTracker() {
     }
     lastTrackedPath.current = pathname;
 
-    // KVKK Çerez Onayı Kontrolü (Kullanıcı analitik çerezlerini reddettiyse izleme yapma)
-    try {
-      const consent = localStorage.getItem('btgrup_cookie_consent_v1');
-      if (consent) {
-        const parsed = JSON.parse(consent);
-        if (parsed.analytics === false) {
-          return;
-        }
-      }
-    } catch {
-      // Çerez okuma hatası durumunda devam et
-    }
-
-    // Tekil Ziyaretçi Kimliği (Kişisel veri içermez, rastgele UUID benzeri anonim kimlik)
+    // Tekil Ziyaretçi Kimliği (Kişisel veri içermez, rastgele anonim kimlik)
     let visitorId = '';
     try {
       visitorId = localStorage.getItem('btgrup_vid') || '';
@@ -50,21 +37,26 @@ export default function AnalyticsTracker() {
       visitorId
     };
 
-    // Hafif ve kesintisiz arka plan isteği (sendBeacon veya fetch keepalive)
     const jsonStr = JSON.stringify(payload);
-    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-      const blob = new Blob([jsonStr], { type: 'application/json' });
-      navigator.sendBeacon('/api/analytics/track', blob);
-    } else {
+
+    // Reklam engelleyicilerden etkilenmeyen birincil uç nokta (/api/traffic/track)
+    // ve geriye dönük uyumlu ikincil uç nokta (/api/analytics/track)
+    fetch('/api/traffic/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonStr,
+      keepalive: true,
+    }).catch(() => {
+      // Birincil rota başarısız olursa ikincil rotayı dene
       fetch('/api/analytics/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: jsonStr,
-        keepalive: true
+        keepalive: true,
       }).catch(() => {
         // İletişim hatalarını sessizce yut
       });
-    }
+    });
   }, [pathname]);
 
   return null;

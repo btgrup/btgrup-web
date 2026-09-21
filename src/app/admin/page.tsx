@@ -60,14 +60,17 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [resQ, resS, resA] = await Promise.all([
+        const [resQ, resS] = await Promise.all([
           fetch('/api/quotes', { cache: 'no-store' }),
           fetch('/api/settings', { cache: 'no-store' }),
-          fetch('/api/analytics?period=7d', { cache: 'no-store' }),
         ]);
+        let resA = await fetch('/api/traffic?period=7d', { cache: 'no-store' }).catch(() => null);
+        if (!resA || !resA.ok) {
+          resA = await fetch('/api/analytics?period=7d', { cache: 'no-store' }).catch(() => null);
+        }
         const dataQ = await resQ.json();
         const dataS = await resS.json();
-        const dataA = await resA.json();
+        const dataA = resA && resA.ok ? await resA.json() : null;
         if (Array.isArray(dataQ)) setQuotes(dataQ);
         if (dataS) setSettings(dataS);
         if (dataA) setAnalytics(dataA);
