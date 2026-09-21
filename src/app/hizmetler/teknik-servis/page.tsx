@@ -18,11 +18,17 @@ import {
 import FAQSection from '@/components/FAQSection';
 
 export const metadata = {
-  title: 'Konya Bilgisayar Teknik Servis ve Bakım | Btgrup',
-  description: 'Konya garantili bilgisayar tamiri, laptop ve notebook onarımı, anakart ve BGA çip seviyesinde müdahale, kurumsal periyodik IT bakım anlaşmaları.',
+  title: 'Konya Bilgisayar Teknik Servisi ve Garantili Onarım',
+  description: 'Konya garantili bilgisayar tamiri, notebook ve laptop onarımı, anakart ve BGA çip tamiri, kurumsal periyodik IT bakım anlaşmaları. Hızlı arıza tespiti ve orijinal yedek parça.',
   keywords: 'konya teknik servis, konya bilgisayar tamiri, konya laptop tamiri, konya bilgisayar servisi, konya bga çip tamiri, konya kurumsal bakım anlaşması',
   alternates: {
-    canonical: 'https://btgrup.com/hizmetler/teknik-servis',
+    canonical: 'https://www.btgrup.com/hizmetler/teknik-servis',
+  },
+  openGraph: {
+    title: 'Konya Garantili Bilgisayar Teknik Servis | Btgrup',
+    description: 'Anakart tamiri, ekran değişimi ve kurumsal periyodik bakım anlaşmaları.',
+    url: 'https://www.btgrup.com/hizmetler/teknik-servis',
+    images: ['https://www.btgrup.com/images/services/technical-service.jpg'],
   },
 };
 

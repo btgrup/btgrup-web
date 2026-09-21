@@ -19,11 +19,17 @@ import DomainSearch from '@/components/DomainSearch';
 import FAQSection from '@/components/FAQSection';
 
 export const metadata = {
-  title: 'Konya Domain ve Bulut Hosting Hizmetleri | Btgrup',
-  description: 'Konya kurumsal web hosting, yeni nesil NVMe SSD bulut sunucular, alan adı tescili ve antispam kurumsal e-posta altyapısı. %99.9 uptime güvencesi.',
+  title: 'Konya Domain Tescili ve NVMe SSD Bulut Hosting',
+  description: 'Konya kurumsal web hosting, yeni nesil NVMe SSD bulut sunucular, alan adı tescili ve antispam kurumsal e-posta altyapısı. %99.9 uptime güvencesi ve 7/24 teknik destek.',
   keywords: 'konya hosting, konya bulut sunucu, konya domain tescil, konya kurumsal mail, konya ssd hosting, btgrup hosting',
   alternates: {
-    canonical: 'https://btgrup.com/hizmetler/hosting-domain',
+    canonical: 'https://www.btgrup.com/hizmetler/hosting-domain',
+  },
+  openGraph: {
+    title: 'Konya Bulut Sunucu & Domain Tescil | Btgrup',
+    description: 'Yüksek hızlı NVMe SSD diskler ve kurumsal antispam e-posta altyapısı.',
+    url: 'https://www.btgrup.com/hizmetler/hosting-domain',
+    images: ['https://www.btgrup.com/images/services/server-hosting.jpg'],
   },
 };
 

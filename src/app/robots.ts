@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/admin/*', '/api/*'],
       },
     ],
-    sitemap: 'https://btgrup.com/sitemap.xml',
+    sitemap: 'https://www.btgrup.com/sitemap.xml',
   };
 }

@@ -17,11 +17,17 @@ import {
 } from 'lucide-react';
 
 export const metadata = {
-  title: 'Konya Web Tasarım ve Özel Yazılım | Btgrup Bilgi Teknolojileri',
-  description: 'Konya kurumsal web tasarım, Google SEO uyumlu mobil siteler, Konya e-ticaret çözümleri, B2B bayi yazılımları ve kolay yönetilebilir Türkçe CMS.',
+  title: 'Konya Web Tasarım ve Özel Yazılım Ajansı',
+  description: 'Konya kurumsal web tasarım, Google SEO uyumlu mobil siteler, e-ticaret sistemleri, B2B bayi yazılımları ve kolay yönetilebilir Türkçe CMS çözümleri. 25 yıllık tecrübe.',
   keywords: 'konya web tasarım, konya web tasarım firmaları, konya web yazılım, konya e-ticaret, konya kurumsal web sitesi, konya seo, btgrup web tasarım',
   alternates: {
-    canonical: 'https://btgrup.com/hizmetler/web-tasarim',
+    canonical: 'https://www.btgrup.com/hizmetler/web-tasarim',
+  },
+  openGraph: {
+    title: 'Konya Kurumsal Web Tasarım & Özel Yazılım | Btgrup',
+    description: 'Google PageSpeed 90+ performans standartlarında kurumsal web siteleri ve e-ticaret sistemleri.',
+    url: 'https://www.btgrup.com/hizmetler/web-tasarim',
+    images: ['https://www.btgrup.com/images/services/web-design.jpg'],
   },
 };
 

@@ -5,6 +5,9 @@ import { ShieldCheck, Lock, Scale, Cookie, ArrowRight, CheckCircle2 } from 'luci
 export const metadata = {
   title: 'Yasal Bildirimler ve Politikalar | Btgrup',
   description: 'BtGrup Bilgi Teknolojileri KVKK aydınlatma metni, gizlilik politikası, çerez tercihleri ve site kullanım şartları.',
+  alternates: {
+    canonical: 'https://www.btgrup.com/yasal',
+  },
 };
 
 export default function LegalIndexPage() {

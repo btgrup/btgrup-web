@@ -19,11 +19,17 @@ import {
 import FAQSection from '@/components/FAQSection';
 
 export const metadata = {
-  title: 'Konya Bilgisayar Satışı ve Lisanslı Yazılım | Btgrup',
-  description: 'Konya sıfır ve garantili kurumsal ofis bilgisayarları, iş istasyonları, orijinal Windows 11 Pro, Microsoft 365 ve ESET siber güvenlik lisans tedariği.',
-  keywords: 'konya bilgisayar satışı, konya kurumsal bilgisayar, konya laptop satışı, konya orijinal windows lisansı, konya yazılım lisans, konya workstation',
+  title: 'Konya Bilgisayar Satışı ve Lisanslı Yazılım Tedariği',
+  description: 'Konya sıfır ve garantili kurumsal ofis bilgisayarları, iş istasyonları (workstation), orijinal Windows 11 Pro, Microsoft 365 ve ESET kurumsal siber güvenlik lisans tedariği.',
+  keywords: 'konya bilgisayar satışı, konya kurumsal bilgisayar, konya laptop satışı, konya orijinal windows lisansı, konya yazılım lisans, konya workstation, konya eset lisans',
   alternates: {
-    canonical: 'https://btgrup.com/hizmetler/bilgisayar-yazilim',
+    canonical: 'https://www.btgrup.com/hizmetler/bilgisayar-yazilim',
+  },
+  openGraph: {
+    title: 'Konya Bilgisayar Satışı & Orijinal Lisans | Btgrup',
+    description: 'Kurumsal ofis bilgisayarları, iş istasyonları, Windows 11 Pro ve Microsoft 365 lisansları.',
+    url: 'https://www.btgrup.com/hizmetler/bilgisayar-yazilim',
+    images: ['https://www.btgrup.com/images/services/hardware-sales.jpg'],
   },
 };
 

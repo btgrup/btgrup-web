@@ -19,11 +19,17 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kurumsal | Btgrup Bilgi Teknolojileri Konya',
-  description: 'Konya Organize Sanayi Bölgesi merkezli Btgrup Bilgi Teknolojileri; 2000 yılından bugüne Konya ve Türkiye genelinde çok sayıda kurumsal firmaya kesintisiz bilişim ve teknoloji ortaklığı sunmaktadır.',
-  keywords: 'konya kurumsal bilişim, btgrup konya, konya bilgi teknolojileri, konya bilişim firmaları, btgrup kurumsal',
+  title: 'Kurumsal & Hakkımızda | 25 Yıllık Bilişim Çözüm Ortaklığı',
+  description: 'Konya Organize Sanayi Bölgesi merkezli Btgrup Bilgi Teknolojileri: 2000 yılından bugüne Konya ve Türkiye genelinde yüzlerce kurumsal firmaya kesintisiz bilişim, web ve teknik altyapı ortaklığı sunmaktadır.',
+  keywords: 'konya kurumsal bilişim, btgrup konya, konya bilgi teknolojileri, konya bilişim firmaları, btgrup kurumsal, konya osb bilişim',
   alternates: {
-    canonical: 'https://btgrup.com/kurumsal',
+    canonical: 'https://www.btgrup.com/kurumsal',
+  },
+  openGraph: {
+    title: 'Kurumsal & Hakkımızda | Btgrup Bilgi Teknolojileri',
+    description: '2000 yılından bugüne kesintisiz kurumsal çözüm ortaklığı.',
+    url: 'https://www.btgrup.com/kurumsal',
+    images: ['https://www.btgrup.com/images/about/about-team.jpg'],
   },
 };
 
