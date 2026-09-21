@@ -133,11 +133,11 @@ export default function AdminTekliflerPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {filteredQuotes.map((q) => (
-            <div key={q.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+            <div key={q.id} className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-100 pb-4 mb-4">
                 <div>
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-bold text-slate-900">{q.fullName}</h3>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900">{q.fullName}</h3>
                     {q.companyName && (
                       <span className="text-xs bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md font-medium">
                         {q.companyName}
@@ -147,7 +147,7 @@ export default function AdminTekliflerPage() {
                   <div className="text-xs text-slate-400 mt-1">Talep Tarihi: {formatQuoteDate(q.createdAt, q.id)}</div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 self-start sm:self-auto">
                   <span className="text-xs font-bold text-slate-500">Durum:</span>
                   <select
                     value={q.status}
@@ -174,14 +174,14 @@ export default function AdminTekliflerPage() {
                 <div className="inline-block bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-md border border-brand-200">
                   {q.category}
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl text-slate-800 text-sm whitespace-pre-line leading-relaxed">
+                <div className="bg-slate-50 p-3 sm:p-4 rounded-xl text-slate-800 text-sm whitespace-pre-line leading-relaxed">
                   {q.details}
                 </div>
               </div>
 
               {/* İletişim & Aksiyon Barı */}
-              <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-600">
+              <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-semibold text-slate-600">
                   <a href={`tel:${q.phone}`} className="flex items-center gap-1.5 hover:text-brand-600 bg-slate-100 px-3 py-1.5 rounded-lg">
                     <Phone className="w-3.5 h-3.5 text-brand-600" />
                     <span>{q.phone}</span>
@@ -199,17 +199,20 @@ export default function AdminTekliflerPage() {
                     className="flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200"
                   >
                     <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>WhatsApp Mesajı Başlat</span>
+                    <span>WhatsApp</span>
                   </a>
                 </div>
 
-                <button
-                  onClick={() => handleDelete(q.id, q.fullName)}
-                  title="Talebi Sil"
-                  className="text-slate-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors ml-auto"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex justify-end pt-2 sm:pt-0">
+                  <button
+                    onClick={() => handleDelete(q.id, q.fullName)}
+                    title="Talebi Sil"
+                    className="flex items-center gap-1 text-slate-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span className="text-xs sm:hidden text-red-500 font-semibold">Sil</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}

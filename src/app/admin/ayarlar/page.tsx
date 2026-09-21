@@ -125,7 +125,7 @@ export default function AdminAyarlarPage() {
       )}
 
       {/* 1. Kurumsal Bilgiler Formu */}
-      <form onSubmit={handleSave} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+      <form onSubmit={handleSave} className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm space-y-6">
         
         {/* Temel Bilgiler */}
         <div className="space-y-4">
@@ -309,7 +309,7 @@ export default function AdminAyarlarPage() {
               <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                 Google Analytics 4 Ölçüm Kimliği (Measurement ID)
               </label>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
                 <input
                   type="text"
                   value={settings.googleAnalyticsId || ''}
@@ -318,7 +318,7 @@ export default function AdminAyarlarPage() {
                   className="w-full max-w-md px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                 />
                 {settings.googleAnalyticsId && settings.googleAnalyticsId.startsWith('G-') && (
-                  <span className="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 shrink-0">
+                  <span className="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Aktif
                   </span>
@@ -335,7 +335,7 @@ export default function AdminAyarlarPage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2 text-sm"
+            className="w-full sm:w-auto justify-center px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2 text-sm"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Kaydediliyor...' : 'Firma Ayarlarını Kaydet'}</span>
@@ -345,7 +345,7 @@ export default function AdminAyarlarPage() {
       </form>
 
       {/* 2. Yönetici Güvenlik & Şifre Değiştirme */}
-      <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+      <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm space-y-6">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
           <Lock className="w-4 h-4 text-brand-600" />
           <span>Yönetici Şifre & Kullanıcı Adı Değiştirme</span>
@@ -407,7 +407,7 @@ export default function AdminAyarlarPage() {
             <button
               type="submit"
               disabled={authSaving}
-              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-2"
+              className="w-full sm:w-auto justify-center px-6 py-3 sm:py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-2"
             >
               <Key className="w-4 h-4" />
               <span>{authSaving ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}</span>

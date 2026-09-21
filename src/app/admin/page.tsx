@@ -106,20 +106,20 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Link
             href="/admin/istatistikler"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl border border-slate-200 shadow-xs transition-all"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold rounded-xl border border-slate-200 shadow-xs transition-all"
           >
             <BarChart3 className="w-4 h-4 text-brand-600" />
             <span>Ziyaretçi Analitiği</span>
           </Link>
           <Link
             href="/admin/teklifler"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl shadow-xs transition-all"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all"
           >
             <FileText className="w-4 h-4" />
-            <span>Tüm Talepleri İncele</span>
+            <span>Tüm Talepler</span>
           </Link>
         </div>
       </div>
@@ -287,9 +287,9 @@ export default function AdminDashboardPage() {
           ) : (
             <div className="divide-y divide-slate-100">
               {quotes.slice(0, 6).map((q) => (
-                <div key={q.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div key={q.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                   <div className="min-w-0 space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-slate-900 text-sm">{q.fullName}</span>
                       {q.companyName && (
                         <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
@@ -307,7 +307,7 @@ export default function AdminDashboardPage() {
                     <div className="text-[10px] text-slate-400">{formatQuoteDate(q.createdAt, q.id)}</div>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 self-end sm:self-auto shrink-0 pt-1 sm:pt-0">
                     <a
                       href={`https://wa.me/90${q.phone.replace(/[^0-9]/g, '')}?text=Merhaba%20${encodeURIComponent(q.fullName)},%20Btgrup%20Bilgi%20Teknolojileri%20olarak%20talebini%20aldık.`}
                       target="_blank"
