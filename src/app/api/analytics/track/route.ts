@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: 'Geçersiz parametreler' }, { status: 400 });
     }
 
-    const recorded = recordVisit({
+    const recorded = await recordVisit({
       path,
       referrer,
       userAgent,

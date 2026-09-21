@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { AnalyticsData, DailyStat, VisitItem, AnalyticsSummary, StatItem, ChartPoint } from './analyticsTypes';
+import { isKvConfigured, kvGet, kvSet } from './kv';
 
 const isVercel = process.env.VERCEL === '1' || !!process.env.VERCEL;
 const dataDir = isVercel ? path.join('/tmp', 'btgrup-data') : path.join(process.cwd(), 'data');
@@ -132,7 +133,28 @@ function getEmptyAnalytics(): AnalyticsData {
 // Bellek içi önbellek
 let memoryAnalytics: AnalyticsData | null = null;
 
-function ensureAnalytics(): AnalyticsData {
+async function ensureAnalytics(): Promise<AnalyticsData> {
+  // 1. Bulut KV (Upstash / Vercel KV) tanımlıysa öncelikle buluttan çek
+  if (isKvConfigured()) {
+    try {
+      const cloudData = await kvGet<AnalyticsData>('btgrup_analytics');
+      if (cloudData && typeof cloudData === 'object') {
+        if (!cloudData.days) cloudData.days = {};
+        if (!cloudData.recentVisits) cloudData.recentVisits = [];
+        memoryAnalytics = cloudData;
+        // Yedek yerel kopyasını da güncelle
+        try {
+          if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+          fs.writeFileSync(analyticsFile, JSON.stringify(cloudData, null, 2), 'utf-8');
+        } catch {}
+        return cloudData;
+      }
+    } catch (err) {
+      console.error('[Analytics] KV okuma hatası, yerel dosya deneniyor:', err);
+    }
+  }
+
+  // 2. Yerel dosya veya bellek önbelleğinden yükle
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
@@ -144,6 +166,9 @@ function ensureAnalytics(): AnalyticsData {
           fs.writeFileSync(analyticsFile, content, 'utf-8');
           const parsed = JSON.parse(content);
           memoryAnalytics = parsed;
+          if (isKvConfigured()) {
+            await kvSet('btgrup_analytics', parsed);
+          }
           return parsed;
         } catch {}
       }
@@ -152,6 +177,9 @@ function ensureAnalytics(): AnalyticsData {
         fs.writeFileSync(analyticsFile, JSON.stringify(initial, null, 2), 'utf-8');
       } catch {}
       memoryAnalytics = initial;
+      if (isKvConfigured()) {
+        await kvSet('btgrup_analytics', initial);
+      }
       return initial;
     }
     const raw = fs.readFileSync(analyticsFile, 'utf-8');
@@ -159,6 +187,9 @@ function ensureAnalytics(): AnalyticsData {
     if (!parsed.days) parsed.days = {};
     if (!parsed.recentVisits) parsed.recentVisits = [];
     memoryAnalytics = parsed;
+    if (isKvConfigured()) {
+      await kvSet('btgrup_analytics', parsed);
+    }
     return parsed;
   } catch (error) {
     console.error('Analytics veri okuma hatası:', error);
@@ -169,36 +200,46 @@ function ensureAnalytics(): AnalyticsData {
   }
 }
 
-function saveAnalytics(data: AnalyticsData) {
+async function saveAnalytics(data: AnalyticsData) {
+  memoryAnalytics = data;
+
+  // Yerel dosyaya yaz
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
     fs.writeFileSync(analyticsFile, JSON.stringify(data, null, 2), 'utf-8');
-    memoryAnalytics = data;
   } catch (error) {
-    console.error('Analytics veri yazma hatası:', error);
-    memoryAnalytics = data;
+    console.error('Analytics yerel veri yazma hatası:', error);
+  }
+
+  // Bulut KV'ye kaydet
+  if (isKvConfigured()) {
+    try {
+      await kvSet('btgrup_analytics', data);
+    } catch (kvErr) {
+      console.error('Analytics KV yazma hatası:', kvErr);
+    }
   }
 }
 
 // İstatistikleri Sıfırlama
-export function resetAnalytics(): boolean {
+export async function resetAnalytics(): Promise<boolean> {
   const empty: AnalyticsData = {
     days: {},
     recentVisits: []
   };
-  saveAnalytics(empty);
+  await saveAnalytics(empty);
   return true;
 }
 
 // Ziyaret Kaydetme
-export function recordVisit(params: {
+export async function recordVisit(params: {
   path: string;
   referrer?: string;
   userAgent?: string;
   visitorId: string;
-}): boolean {
+}): Promise<boolean> {
   const { path: rawPath, referrer: rawRef, userAgent = '', visitorId } = params;
 
   // Admin veya dahili asset rotalarını izleme
@@ -217,7 +258,7 @@ export function recordVisit(params: {
     return false;
   }
 
-  const data = ensureAnalytics();
+  const data = await ensureAnalytics();
   const today = getTodayDateString();
   const cleanPath = rawPath.split('?')[0] || '/';
   const referrer = cleanReferrer(rawRef);
@@ -269,7 +310,7 @@ export function recordVisit(params: {
     data.recentVisits = data.recentVisits.slice(0, 60);
   }
 
-  saveAnalytics(data);
+  await saveAnalytics(data);
   return true;
 }
 
@@ -305,8 +346,8 @@ function formatDayLabel(dateStr: string): string {
 }
 
 // Özet ve Analiz Raporu Üretimi
-export function getAnalyticsSummary(period: '7d' | '30d' | 'all' = '7d'): AnalyticsSummary {
-  const data = ensureAnalytics();
+export async function getAnalyticsSummary(period: '7d' | '30d' | 'all' = '7d'): Promise<AnalyticsSummary> {
+  const data = await ensureAnalytics();
   const today = getTodayDateString();
   const yesterday = getTodayDateString(-1);
 
@@ -414,6 +455,7 @@ export function getAnalyticsSummary(period: '7d' | '30d' | 'all' = '7d'): Analyt
 
   return {
     period,
+    isKvConfigured: isKvConfigured(),
     totalViews,
     totalVisitors: uniqueVisitorSet.size,
     todayViews,

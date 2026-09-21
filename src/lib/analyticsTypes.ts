@@ -40,6 +40,7 @@ export interface StatItem {
 
 export interface AnalyticsSummary {
   period: '7d' | '30d' | 'all';
+  isKvConfigured?: boolean;
   totalViews: number;
   totalVisitors: number;
   todayViews: number;

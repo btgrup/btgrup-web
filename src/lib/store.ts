@@ -3,6 +3,7 @@ import path from 'path';
 import { initialSettings, initialTickets, initialQuotes, initialProducts, initialAdmin } from './initialData';
 import { CompanySettings, ProductItem, QuoteRequest, ServiceTicket, AdminAuth } from './types';
 import { getTurkishDateTime } from './dateUtils';
+import { isKvConfigured, kvGet, kvSet } from './kv';
 
 interface DatabaseData {
   auth: AdminAuth;
@@ -26,6 +27,38 @@ let memoryData: DatabaseData = {
   products: initialProducts,
 };
 
+// Başlangıçta KV verisi varsa arka planda senkronize et
+if (isKvConfigured()) {
+  kvGet<DatabaseData>('btgrup_db').then(cloudDb => {
+    if (cloudDb && cloudDb.settings) {
+      memoryData = cloudDb;
+      try {
+        if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+        fs.writeFileSync(dbFile, JSON.stringify(cloudDb, null, 2), 'utf-8');
+      } catch {}
+    }
+  }).catch(() => {});
+}
+
+export async function syncDbWithKv(): Promise<DatabaseData> {
+  if (isKvConfigured()) {
+    try {
+      const cloudDb = await kvGet<DatabaseData>('btgrup_db');
+      if (cloudDb && cloudDb.settings) {
+        memoryData = cloudDb;
+        try {
+          if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+          fs.writeFileSync(dbFile, JSON.stringify(cloudDb, null, 2), 'utf-8');
+        } catch {}
+        return cloudDb;
+      }
+    } catch (e) {
+      console.error('[Store] syncDbWithKv hatası:', e);
+    }
+  }
+  return ensureDb();
+}
+
 function ensureDb(): DatabaseData {
   try {
     if (!fs.existsSync(dataDir)) {
@@ -38,10 +71,16 @@ function ensureDb(): DatabaseData {
           fs.writeFileSync(dbFile, content, 'utf-8');
           const parsed = JSON.parse(content);
           memoryData = parsed;
+          if (isKvConfigured()) {
+            kvSet('btgrup_db', parsed).catch(() => {});
+          }
           return parsed;
         } catch {}
       }
       fs.writeFileSync(dbFile, JSON.stringify(memoryData, null, 2), 'utf-8');
+      if (isKvConfigured()) {
+        kvSet('btgrup_db', memoryData).catch(() => {});
+      }
       return memoryData;
     }
     const raw = fs.readFileSync(dbFile, 'utf-8');
@@ -61,15 +100,20 @@ function ensureDb(): DatabaseData {
 }
 
 function saveDb(data: DatabaseData) {
+  memoryData = data;
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
     fs.writeFileSync(dbFile, JSON.stringify(data, null, 2), 'utf-8');
-    memoryData = data;
   } catch (error) {
     console.error("DB yazma hatası:", error);
-    memoryData = data;
+  }
+
+  if (isKvConfigured()) {
+    kvSet('btgrup_db', data).catch(err => {
+      console.error('[Store] KV yazma hatası:', err);
+    });
   }
 }
 

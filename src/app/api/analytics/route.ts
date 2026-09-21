@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const periodParam = searchParams.get('period') || '7d';
     const period = (['7d', '30d', 'all'].includes(periodParam) ? periodParam : '7d') as '7d' | '30d' | 'all';
 
-    const summary = getAnalyticsSummary(period);
+    const summary = await getAnalyticsSummary(period);
     return NextResponse.json(summary, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
 export async function DELETE() {
   try {
-    resetAnalytics();
+    await resetAnalytics();
     return NextResponse.json({ success: true, message: 'İstatistikler başarıyla sıfırlandı' });
   } catch (error) {
     return NextResponse.json({ error: 'İstatistikler sıfırlanamadı' }, { status: 500 });

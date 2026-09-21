@@ -46,17 +46,28 @@ export default function AnalyticsTracker() {
       headers: { 'Content-Type': 'application/json' },
       body: jsonStr,
       keepalive: true,
-    }).catch(() => {
-      // Birincil rota başarısız olursa ikincil rotayı dene
-      fetch('/api/analytics/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: jsonStr,
-        keepalive: true,
-      }).catch(() => {
-        // İletişim hatalarını sessizce yut
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return fetch('/api/analytics/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: jsonStr,
+            keepalive: true,
+          });
+        }
+      })
+      .catch(() => {
+        // Birincil rota ağ hatası verirse ikincil rotayı dene
+        fetch('/api/analytics/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: jsonStr,
+          keepalive: true,
+        }).catch(() => {
+          // İletişim hatalarını sessizce yut
+        });
       });
-    });
   }, [pathname]);
 
   return null;

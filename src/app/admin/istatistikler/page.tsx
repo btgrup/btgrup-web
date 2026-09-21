@@ -19,7 +19,9 @@ import {
   ShieldCheck,
   ChevronRight,
   Trash2,
-  Activity
+  Activity,
+  Database,
+  AlertCircle
 } from 'lucide-react';
 import { AnalyticsSummary } from '@/lib/analyticsTypes';
 import { getPageTitleByPath } from '@/lib/analyticsUtils';
@@ -129,6 +131,19 @@ export default function AdminIstatistiklerPage() {
               <ShieldCheck className="w-3 h-3" />
               KVKK & Gizlilik Uyumlu
             </span>
+            {data && (
+              data.isKvConfigured ? (
+                <span className="text-[11px] text-emerald-700 font-semibold bg-emerald-100/80 px-2 py-0.5 rounded flex items-center gap-1">
+                  <Database className="w-3 h-3 text-emerald-600" />
+                  Kalıcı Bulut KV Aktif
+                </span>
+              ) : (
+                <span className="text-[11px] text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded flex items-center gap-1" title="Vercel sunucuları kapandığında istatistiklerin sıfırlanmaması için Upstash KV bağlayabilirsiniz">
+                  <AlertCircle className="w-3 h-3 text-amber-600" />
+                  Geçici Bellek (KV Bağlı Değil)
+                </span>
+              )
+            )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Ziyaretçi & Trafik İstatistikleri
@@ -208,6 +223,35 @@ export default function AdminIstatistiklerPage() {
         </div>
       ) : (
         <>
+          {/* Kalıcı Veritabanı Bilgilendirme Kutusu (KV Bağlı Değilse) */}
+          {!data.isKvConfigured && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <AlertCircle className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                    <span>Vercel Sunucusuz (Serverless) Çalışma Bildirimi</span>
+                    <span className="text-[10px] bg-amber-200/80 text-amber-900 font-bold px-2 py-0.5 rounded-md">Bilgi</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed max-w-3xl">
+                    Web siteniz Vercel üzerinde bağımsız sunucusuz (serverless) fonksiyonlarla çalışmaktadır. Sunucular hareketsiz kaldığında kapandığı için yerel hafızadaki ziyaretçi sayıları sıfırlanabilir. İstatistiklerinizin ve gelen taleplerinizin hiç kaybolmadan birikmesi için Vercel panelinizden <strong>Storage → Upstash Redis (KV)</strong> bağlayabilirsiniz.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://vercel.com/docs/storage/upstash-redis"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-colors shrink-0 shadow-2xs"
+              >
+                <span>Nasıl Kurulur?</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          )}
+
           {/* 4 Özet Kart */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* 1. Toplam Sayfa Görüntüleme */}
