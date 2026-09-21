@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { getTurkishDateTime } from './dateUtils';
 
 export interface QuoteEmailData {
   fullName: string;
@@ -19,7 +20,7 @@ export async function sendQuoteNotification(data: QuoteEmailData) {
   const smtpPass = process.env.SMTP_PASS;
   const fromAddress = process.env.SMTP_FROM || `"Btgrup Web Sitesi" <${smtpUser}>`;
 
-  const dateStr = data.createdAt || new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
+  const dateStr = data.createdAt || getTurkishDateTime();
   const cleanPhone = data.phone.replace(/[^0-9]/g, '');
   const waPhone = cleanPhone.startsWith('90') ? cleanPhone : cleanPhone.startsWith('0') ? `9${cleanPhone}` : `90${cleanPhone}`;
 

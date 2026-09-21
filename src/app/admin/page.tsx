@@ -24,6 +24,7 @@ import {
 import { QuoteRequest, CompanySettings } from '@/lib/types';
 import { AnalyticsSummary } from '@/lib/analyticsTypes';
 import { getPageTitleByPath } from '@/lib/analyticsUtils';
+import { formatQuoteDate } from '@/lib/dateUtils';
 
 export default function AdminDashboardPage() {
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
@@ -269,7 +270,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="text-xs font-semibold text-brand-600">{q.category}</div>
                     <p className="text-xs text-slate-500 line-clamp-1">{q.details}</p>
-                    <div className="text-[10px] text-slate-400">{q.createdAt}</div>
+                    <div className="text-[10px] text-slate-400">{formatQuoteDate(q.createdAt, q.id)}</div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">

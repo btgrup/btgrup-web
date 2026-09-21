@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Search, Trash2, Phone, Mail, MessageSquare, Check, Clock } from 'lucide-react';
 import { QuoteRequest } from '@/lib/types';
+import { formatQuoteDate } from '@/lib/dateUtils';
 
 export default function AdminTekliflerPage() {
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
@@ -126,7 +127,7 @@ export default function AdminTekliflerPage() {
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">Talep Tarihi: {q.createdAt}</div>
+                  <div className="text-xs text-slate-400 mt-1">Talep Tarihi: {formatQuoteDate(q.createdAt, q.id)}</div>
                 </div>
 
                 <div className="flex items-center gap-3">

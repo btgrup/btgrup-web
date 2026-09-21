@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { initialSettings, initialTickets, initialQuotes, initialProducts, initialAdmin } from './initialData';
 import { CompanySettings, ProductItem, QuoteRequest, ServiceTicket, AdminAuth } from './types';
+import { getTurkishDateTime } from './dateUtils';
 
 interface DatabaseData {
   auth: AdminAuth;
@@ -96,11 +97,12 @@ export const getTicketByNumber = (ticketNumber: string): ServiceTicket | undefin
 
 export const createTicket = (ticket: Omit<ServiceTicket, 'id' | 'createdAt' | 'updatedAt'>): ServiceTicket => {
   const db = ensureDb();
+  const nowStr = getTurkishDateTime();
   const newTicket: ServiceTicket = {
     ...ticket,
     id: Date.now().toString(),
-    createdAt: new Date().toLocaleString('tr-TR'),
-    updatedAt: new Date().toLocaleString('tr-TR')
+    createdAt: nowStr,
+    updatedAt: nowStr
   };
   db.tickets.unshift(newTicket);
   saveDb(db);
@@ -114,7 +116,7 @@ export const updateTicket = (id: string, updates: Partial<ServiceTicket>): Servi
   db.tickets[index] = {
     ...db.tickets[index],
     ...updates,
-    updatedAt: new Date().toLocaleString('tr-TR')
+    updatedAt: getTurkishDateTime()
   };
   saveDb(db);
   return db.tickets[index];
@@ -140,7 +142,7 @@ export const createQuote = (quote: Omit<QuoteRequest, 'id' | 'createdAt' | 'stat
     ...quote,
     id: 'q-' + Date.now().toString(),
     status: 'Yeni',
-    createdAt: new Date().toLocaleString('tr-TR')
+    createdAt: getTurkishDateTime()
   };
   db.quotes.unshift(newQuote);
   saveDb(db);
