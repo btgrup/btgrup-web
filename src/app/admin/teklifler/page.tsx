@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Search, Trash2, Phone, Mail, MessageSquare, Check, Clock } from 'lucide-react';
 import { QuoteRequest } from '@/lib/types';
 import { formatQuoteDate } from '@/lib/dateUtils';
+import { confirmDelete, showSuccessToast, showErrorToast } from '@/lib/alerts';
 
 export default function AdminTekliflerPage() {
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
@@ -36,21 +37,37 @@ export default function AdminTekliflerPage() {
       });
       if (res.ok) {
         setQuotes(prev => prev.map(q => q.id === id ? { ...q, status } : q));
+        showSuccessToast(`Talep durumu "${status}" olarak güncellendi.`);
+      } else {
+        showErrorToast('Durum güncellenirken hata oluştu.');
       }
     } catch (err) {
       console.error(err);
+      showErrorToast('Sunucu bağlantı hatası oluştu.');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Bu talebi silmek istediğinizden emin misiniz?')) return;
+  const handleDelete = async (id: string, name?: string) => {
+    const isConfirmed = await confirmDelete({
+      title: 'Talebi Silmek İstiyor Musunuz?',
+      text: name
+        ? `"${name}" adına ait müşteri talebi kalıcı olarak silinecektir.`
+        : 'Bu müşteri talebi kalıcı olarak silinecektir.'
+    });
+
+    if (!isConfirmed) return;
+
     try {
       const res = await fetch(`/api/quotes?id=${id}`, { method: 'DELETE' });
       if (res.ok) {
         setQuotes(prev => prev.filter(q => q.id !== id));
+        showSuccessToast('Talep başarıyla silindi.');
+      } else {
+        showErrorToast('Silme işlemi başarısız oldu.');
       }
     } catch (err) {
       console.error(err);
+      showErrorToast('Sunucu bağlantı hatası oluştu.');
     }
   };
 
@@ -187,7 +204,7 @@ export default function AdminTekliflerPage() {
                 </div>
 
                 <button
-                  onClick={() => handleDelete(q.id)}
+                  onClick={() => handleDelete(q.id, q.fullName)}
                   title="Talebi Sil"
                   className="text-slate-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors ml-auto"
                 >

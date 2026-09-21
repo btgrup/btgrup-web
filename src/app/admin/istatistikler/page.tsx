@@ -23,6 +23,7 @@ import {
 import { AnalyticsSummary } from '@/lib/analyticsTypes';
 import { getPageTitleByPath } from '@/lib/analyticsUtils';
 import { CompanySettings } from '@/lib/types';
+import { confirmDelete, showSuccessToast, showErrorToast } from '@/lib/alerts';
 
 export default function AdminIstatistiklerPage() {
   const [period, setPeriod] = useState<'7d' | '30d' | 'all'>('7d');
@@ -52,20 +53,25 @@ export default function AdminIstatistiklerPage() {
   };
 
   const handleReset = async () => {
-    if (!window.confirm('Tüm ziyaretçi ve sayfa görüntüleme istatistiklerini sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.')) {
-      return;
-    }
+    const isConfirmed = await confirmDelete({
+      title: 'İstatistikleri Sıfırlamak İstiyor Musunuz?',
+      text: 'Tüm sayfa gösterimleri, tekil ziyaretçi sayıları ve canlı akış verileri kalıcı olarak sıfırlanacaktır.',
+      confirmButtonText: 'Evet, Sıfırla'
+    });
+
+    if (!isConfirmed) return;
+
     setResetting(true);
     try {
       const res = await fetch('/api/analytics', { method: 'DELETE' });
       if (res.ok) {
         await fetchData(period, true);
-        alert('İstatistikler başarıyla sıfırlandı.');
+        showSuccessToast('Ziyaretçi istatistikleri başarıyla sıfırlandı.');
       } else {
-        alert('İstatistikler sıfırlanırken bir hata oluştu.');
+        showErrorToast('İstatistikler sıfırlanırken bir hata oluştu.');
       }
     } catch {
-      alert('Bağlantı hatası oluştu.');
+      showErrorToast('Sunucu bağlantı hatası oluştu.');
     } finally {
       setResetting(false);
     }

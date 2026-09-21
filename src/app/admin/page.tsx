@@ -17,20 +17,45 @@ import {
   Wrench,
   Cpu,
   BarChart3,
-  Users,
-  Eye,
-  TrendingUp
+  Users, 
+  Eye, 
+  TrendingUp,
+  Trash2
 } from 'lucide-react';
 import { QuoteRequest, CompanySettings } from '@/lib/types';
 import { AnalyticsSummary } from '@/lib/analyticsTypes';
 import { getPageTitleByPath } from '@/lib/analyticsUtils';
 import { formatQuoteDate } from '@/lib/dateUtils';
+import { confirmDelete, showSuccessToast, showErrorToast } from '@/lib/alerts';
 
 export default function AdminDashboardPage() {
   const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleDeleteQuote = async (id: string, name?: string) => {
+    const isConfirmed = await confirmDelete({
+      title: 'Talebi Silmek İstiyor Musunuz?',
+      text: name
+        ? `"${name}" adına ait müşteri talebi kalıcı olarak silinecektir.`
+        : 'Bu müşteri talebi kalıcı olarak silinecektir.'
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      const res = await fetch(`/api/quotes?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setQuotes(prev => prev.filter(q => q.id !== id));
+        showSuccessToast('Talep başarıyla silindi.');
+      } else {
+        showErrorToast('Silme işlemi başarısız oldu.');
+      }
+    } catch {
+      showErrorToast('Sunucu bağlantı hatası oluştu.');
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -296,6 +321,13 @@ export default function AdminDashboardPage() {
                     >
                       <Phone className="w-4 h-4" />
                     </a>
+                    <button
+                      onClick={() => handleDeleteQuote(q.id, q.fullName)}
+                      title="Talebi Sil"
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-slate-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))}

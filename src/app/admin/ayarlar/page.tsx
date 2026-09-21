@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Save, CheckCircle2, AlertCircle, Building2, Phone, Mail, MapPin, Lock, Key, ShieldCheck, BarChart3, Globe } from 'lucide-react';
 import { CompanySettings } from '@/lib/types';
+import { showSuccessToast, showErrorToast } from '@/lib/alerts';
 
 export default function AdminAyarlarPage() {
   const [settings, setSettings] = useState<CompanySettings | null>(null);
@@ -50,12 +51,14 @@ export default function AdminAyarlarPage() {
       });
       if (res.ok) {
         setSuccess(true);
+        showSuccessToast('Firma ayarları başarıyla kaydedildi.');
         setTimeout(() => setSuccess(false), 4000);
       } else {
         throw new Error('Ayarlar kaydedilemedi');
       }
     } catch (err: any) {
       setError(err.message || 'Hata oluştu');
+      showErrorToast(err.message || 'Ayarlar kaydedilirken hata oluştu');
     } finally {
       setSaving(false);
     }
@@ -80,11 +83,13 @@ export default function AdminAyarlarPage() {
       }
 
       setAuthSuccess(true);
+      showSuccessToast('Yönetici şifresi başarıyla güncellendi.');
       setCurrentPassword('');
       setNewPassword('');
       setTimeout(() => setAuthSuccess(false), 4000);
     } catch (err: any) {
       setAuthError(err.message || 'Hata oluştu');
+      showErrorToast(err.message || 'Şifre güncellenirken hata oluştu');
     } finally {
       setAuthSaving(false);
     }

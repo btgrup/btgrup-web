@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 export default function AdminLayout({
   children,
