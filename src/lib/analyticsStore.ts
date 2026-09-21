@@ -13,10 +13,7 @@ export function getTodayDateString(offsetDays = 0): string {
   if (offsetDays !== 0) {
     d.setDate(d.getDate() + offsetDays);
   }
-  // TR time: UTC+3
-  const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-  const trDate = new Date(utc + (3600000 * 3));
-  return trDate.toISOString().split('T')[0];
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(d);
 }
 
 // Bot / Crawler Kontrolü
@@ -125,99 +122,11 @@ export function getPageTitleByPath(rawPath: string): string {
   }
 }
 
-// Başlangıç için gerçekçi demo geçmiş verisi (Son 14 gün)
-function generateInitialAnalytics(): AnalyticsData {
-  const days: Record<string, DailyStat> = {};
-  const recentVisits: VisitItem[] = [];
-
-  const pagesPool = [
-    '/',
-    '/hizmetler/web-tasarim',
-    '/hizmetler/hosting-domain',
-    '/hizmetler/teknik-servis',
-    '/hizmetler/bilgisayar-yazilim',
-    '/iletisim',
-    '/teklif-al',
-    '/kurumsal'
-  ];
-
-  const referrersPool = [
-    'Doğrudan (Direct / Yer İmleri)',
-    'Google Arama',
-    'Google Arama',
-    'Instagram',
-    'LinkedIn',
-    'Doğrudan (Site İçi Gezinme)'
-  ];
-
-  const devicesPool: ('Masaüstü' | 'Mobil' | 'Tablet')[] = [
-    'Masaüstü', 'Masaüstü', 'Mobil', 'Mobil', 'Mobil', 'Tablet'
-  ];
-
-  const browsersPool = [
-    'Google Chrome', 'Google Chrome', 'Safari', 'Microsoft Edge', 'Mozilla Firefox'
-  ];
-
-  for (let i = 14; i >= 0; i--) {
-    const dateStr = getTodayDateString(-i);
-    // Rastgele ama tutarlı ziyaretçi ve sayfa gösterim sayıları
-    const baseVisitors = 22 + Math.floor(Math.sin(i * 1.5) * 8) + (i === 0 ? 12 : 0);
-    const baseViews = Math.floor(baseVisitors * (1.8 + Math.random() * 0.9));
-
-    const dayPages: Record<string, number> = {};
-    const dayReferrers: Record<string, number> = {};
-    const dayDevices: Record<string, number> = {};
-    const dayBrowsers: Record<string, number> = {};
-
-    for (let v = 0; v < baseViews; v++) {
-      const page = pagesPool[Math.floor(Math.random() * pagesPool.length)];
-      dayPages[page] = (dayPages[page] || 0) + 1;
-
-      const ref = referrersPool[Math.floor(Math.random() * referrersPool.length)];
-      dayReferrers[ref] = (dayReferrers[ref] || 0) + 1;
-
-      const dev = devicesPool[Math.floor(Math.random() * devicesPool.length)];
-      dayDevices[dev] = (dayDevices[dev] || 0) + 1;
-
-      const browser = browsersPool[Math.floor(Math.random() * browsersPool.length)];
-      dayBrowsers[browser] = (dayBrowsers[browser] || 0) + 1;
-    }
-
-    const visitorsList: string[] = [];
-    for (let u = 0; u < baseVisitors; u++) {
-      visitorsList.push(`v-${dateStr}-${u}`);
-    }
-
-    days[dateStr] = {
-      date: dateStr,
-      views: baseViews,
-      visitors: visitorsList,
-      pages: dayPages,
-      referrers: dayReferrers,
-      devices: dayDevices,
-      browsers: dayBrowsers
-    };
-  }
-
-  // Son 20 örnek canlı ziyaret
-  const now = Date.now();
-  for (let i = 0; i < 20; i++) {
-    const timeOffsetMinutes = i * 7 + Math.floor(Math.random() * 5);
-    const visitDate = new Date(now - timeOffsetMinutes * 60000);
-    const dev = devicesPool[i % devicesPool.length];
-    recentVisits.push({
-      id: `init-vis-${i}`,
-      path: pagesPool[i % pagesPool.length],
-      referrer: referrersPool[i % referrersPool.length],
-      device: dev,
-      browser: browsersPool[i % browsersPool.length],
-      os: dev === 'Mobil' ? 'Android / iOS' : 'Windows 11',
-      timestamp: visitDate.toISOString(),
-      visitorId: `vid-${1000 + i}`
-    });
-  }
-
-  return { days, recentVisits };
+function getEmptyAnalytics(): AnalyticsData {
+  return {
+    days: {},
+    recentVisits: []
+  };
 }
 
 // Bellek içi önbellek
@@ -238,7 +147,7 @@ function ensureAnalytics(): AnalyticsData {
           return parsed;
         } catch {}
       }
-      const initial = generateInitialAnalytics();
+      const initial = getEmptyAnalytics();
       try {
         fs.writeFileSync(analyticsFile, JSON.stringify(initial, null, 2), 'utf-8');
       } catch {}
@@ -254,7 +163,7 @@ function ensureAnalytics(): AnalyticsData {
   } catch (error) {
     console.error('Analytics veri okuma hatası:', error);
     if (!memoryAnalytics) {
-      memoryAnalytics = generateInitialAnalytics();
+      memoryAnalytics = getEmptyAnalytics();
     }
     return memoryAnalytics;
   }
@@ -271,6 +180,16 @@ function saveAnalytics(data: AnalyticsData) {
     console.error('Analytics veri yazma hatası:', error);
     memoryAnalytics = data;
   }
+}
+
+// İstatistikleri Sıfırlama
+export function resetAnalytics(): boolean {
+  const empty: AnalyticsData = {
+    days: {},
+    recentVisits: []
+  };
+  saveAnalytics(empty);
+  return true;
 }
 
 // Ziyaret Kaydetme

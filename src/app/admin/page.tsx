@@ -213,17 +213,23 @@ export default function AdminDashboardPage() {
                 En Çok Ziyaret Edilen Sayfalar
               </span>
               <div className="space-y-2">
-                {analytics.topPages.slice(0, 3).map((page, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                    <div className="min-w-0 pr-2">
-                      <div className="font-bold text-slate-800 truncate">{getPageTitleByPath(page.name)}</div>
-                      <div className="text-[10px] text-slate-400 font-mono">{page.name}</div>
-                    </div>
-                    <span className="shrink-0 font-bold bg-white px-2 py-1 rounded-lg border border-slate-200 text-slate-700">
-                      {page.count} gösterim
-                    </span>
+                {analytics.topPages.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center text-xs text-slate-400">
+                    Henüz ziyaret verisi kaydedilmedi.
                   </div>
-                ))}
+                ) : (
+                  analytics.topPages.slice(0, 3).map((page, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+                      <div className="min-w-0 pr-2">
+                        <div className="font-bold text-slate-800 truncate">{getPageTitleByPath(page.name)}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">{page.name}</div>
+                      </div>
+                      <span className="shrink-0 font-bold bg-white px-2 py-1 rounded-lg border border-slate-200 text-slate-700">
+                        {page.count} gösterim
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
