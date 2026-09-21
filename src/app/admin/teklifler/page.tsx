@@ -12,7 +12,7 @@ export default function AdminTekliflerPage() {
 
   const fetchQuotes = async () => {
     try {
-      const res = await fetch('/api/quotes');
+      const res = await fetch('/api/quotes', { cache: 'no-store' });
       const data = await res.json();
       if (Array.isArray(data)) setQuotes(data);
     } catch (err) {

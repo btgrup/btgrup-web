@@ -75,30 +75,7 @@ export const initialTickets: ServiceTicket[] = [
   }
 ];
 
-export const initialQuotes: QuoteRequest[] = [
-  {
-    id: "q-1",
-    fullName: "Selin Aksoy",
-    companyName: "Aksoy Hukuk Bürosu",
-    phone: "0533 444 55 66",
-    email: "selin@aksoyhukuk.com",
-    category: "Web Tasarım & Yazılım",
-    details: "Hukuk büromuz için çok dilli, mobil uyumlu ve randevu sistemli modern kurumsal web sitesi istiyoruz.",
-    status: "Yeni",
-    createdAt: "2026-09-13 18:20"
-  },
-  {
-    id: "q-2",
-    fullName: "Mehmet Çetin",
-    companyName: "Çetin Mimarlık",
-    phone: "0535 555 66 77",
-    email: "mehmet@cetinmimarlik.com",
-    category: "Domain & Hosting",
-    details: "Mevcut 5 adet kurumsal e-posta hesabımızı ve sitemizi yüksek hızlı bulut hosting sunucunuza taşımak istiyoruz.",
-    status: "İncelendi",
-    createdAt: "2026-09-12 10:45"
-  }
-];
+export const initialQuotes: QuoteRequest[] = [];
 
 export const initialProducts: ProductItem[] = [
   // Hosting Paketleri

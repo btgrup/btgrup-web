@@ -35,9 +35,9 @@ export default function AdminDashboardPage() {
     async function loadData() {
       try {
         const [resQ, resS, resA] = await Promise.all([
-          fetch('/api/quotes'),
-          fetch('/api/settings'),
-          fetch('/api/analytics?period=7d'),
+          fetch('/api/quotes', { cache: 'no-store' }),
+          fetch('/api/settings', { cache: 'no-store' }),
+          fetch('/api/analytics?period=7d', { cache: 'no-store' }),
         ]);
         const dataQ = await resQ.json();
         const dataS = await resS.json();

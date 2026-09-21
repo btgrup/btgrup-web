@@ -2,9 +2,18 @@ import { NextResponse } from 'next/server';
 import { getQuotes, createQuote, updateQuoteStatus, deleteQuote } from '@/lib/store';
 import { sendQuoteNotification } from '@/lib/mail';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   const quotes = getQuotes();
-  return NextResponse.json(quotes);
+  return NextResponse.json(quotes, {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
 }
 
 export async function POST(request: Request) {
